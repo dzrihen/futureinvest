@@ -643,8 +643,7 @@ VIEWS.journal = async m => {
    <label class="f">תזה – למה?<textarea id="jT"></textarea></label><label class="f">תוצאה צפויה (מדידה)<input id="jE"></label><label class="f">תנאי יציאה – מה יגרום לי להודות שטעיתי?<input id="jX"></label>
    <div id="jChk"></div><div class="row" style="margin-top:8px"><button class="btn sec" id="jCheck">בדיקה מול הכללים</button><button class="btn" id="jSave">שמירה ביומן</button></div></div>
    <div class="card"><h2>המדיניות שלי</h2><pre style="white-space:pre-wrap;font:inherit">${esc(S.policy)}</pre><p class="small muted">עריכה בלשונית "פרופיל ומדיניות".</p>
-   <h2>רשימת מעקב</h2><div class="row"><input id="wS" placeholder="טיקר" style="flex:1 1 90px"><input id="wN" placeholder="למה מעניין?" style="flex:3 1 160px"><button class="btn sec" id="wAdd">הוספה</button></div>
-   <table class="tbl">${S.watch.map(w => `<tr><td><b>${esc(w.sym)}</b></td><td>${esc(w.note)}</td><td class="small muted">${esc(w.date)}</td><td><button class="btn del" data-wd="${w.id}">✕</button></td></tr>`).join("")}</table></div></div>
+   <h2>רשימת מעקב</h2><p class="small">רשימת המעקב וההתראות עברו ללשונית "מעקב והתראות" (${S.watch.length} ניירות).</p></div></div>
   <h2 style="margin-top:16px">החלטות קודמות</h2>${ent || '<p class="muted">עוד אין החלטות ביומן.</p>'}`;
   const check = () => {
     const a = $("#jA").value, sym = $("#jS").value.trim().toUpperCase(), amt = (+$("#jAmt").value || 0) / fx(), role = $("#jR").value, p = P(), w = [];
@@ -665,8 +664,6 @@ VIEWS.journal = async m => {
     S.journal.unshift({ id: uid(), date: today(), action: $("#jA").value, sym: $("#jS").value.trim().toUpperCase(), size: $("#jAmt").value ? "₪" + r0(+$("#jAmt").value) : "", thesis: $("#jT").value, expected: $("#jE").value, horizon: $("#jH").value, exit: $("#jX").value, review: $("#jRv").value, warnings: w }); save(); go(); };
   $$("[data-jd]", m).forEach(b => b.onclick = () => { if (confirm("למחוק?")) { S.journal = S.journal.filter(j => j.id !== b.dataset.jd); save(); go(); } });
   $$("[data-rv]", m).forEach(b => b.onclick = () => { const j = S.journal.find(x => x.id === b.dataset.rv); j.reviewed = today(); j.reviewNote = $(`[data-rn="${j.id}"]`).value; save(); go(); });
-  $("#wAdd").onclick = () => { const s = $("#wS").value.trim().toUpperCase(); if (!s) return; S.watch.push({ id: uid(), sym: s, note: $("#wN").value, date: today() }); save(); go(); };
-  $$("[data-wd]", m).forEach(b => b.onclick = () => { S.watch = S.watch.filter(w => w.id !== b.dataset.wd); save(); go(); });
 };
 
 /* ---------- Data & backup ---------- */

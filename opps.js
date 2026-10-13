@@ -71,7 +71,7 @@ function ideaCard(r, sc, extra = "") {
   const { bull, bear } = bullBear(r, sc); const mine = MYX?.w[r.t];
   return `<div class="card idea"><div class="ih">${badge(sc.s)}<div><b>${esc(r.t)}</b> <span class="muted">${esc(r.n)}</span>${mine ? ' <span class="tag est">יש לך</span>' : ""}${r.ucits ? ' <span class="tag fact">אירופית</span>' : ""}</div></div>
    ${extra}<div class="bb"><div class="pos">👍 ${esc(bull)}</div><div class="neg">👎 ${esc(bear)}</div></div>
-   ${breakdown(r, sc)}<a class="small" href="${yLink(r)}" target="_blank" rel="noopener">למידע נוסף ←</a></div>`;
+   ${breakdown(r, sc)}<div class="row chkb"><button class="btn sec" data-chk="${esc(r.t)}">🛒 בדיקה לפני קנייה</button><a class="small"  href="${yLink(r)}" target="_blank" rel="noopener">למידע נוסף ←</a></div></div>`;
 }
 let MYX = null;
 VIEWS.today = async m => {

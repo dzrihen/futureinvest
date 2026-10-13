@@ -257,6 +257,7 @@ def scores(Y, spy_rows, cons, sec, extra):
             pk = w[0]; mdd = 0
             for v in w: pk = max(pk, v); mdd = min(mdd, v / pk - 1)
             r["mdd"] = round(mdd * 100, 1)
+            r["hi52"] = round(max(w[-52:]), 2)
             r["m6"] = round((last / w[-27] - 1) * 100, 1) if len(w) > 27 else None
             r["m12"] = round((last / w[-53] - 1) * 100, 1) if len(w) > 53 else None
             base = r["r3"] if r["r3"] is not None else r["r1"]

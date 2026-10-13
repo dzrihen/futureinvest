@@ -4,7 +4,7 @@ BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8793/"
 srv = None
 if "localhost" in BASE:
     srv = subprocess.Popen([sys.executable, "-m", "http.server", "8793"], cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1)
-TABS = ["today", "plan", "re", "dash", "profile", "port", "expo", "cmp", "isr", "sim", "stress", "journal", "data"]
+TABS = ["today", "watch", "plan", "re", "dash", "profile", "port", "expo", "cmp", "isr", "sim", "stress", "journal", "data"]
 fails = []
 try:
   with sync_playwright() as p:
@@ -77,6 +77,30 @@ try:
             if sw > 2: fails.append(f"{name}/plan-real: overflow {sw}px")
             pg.goto(BASE + "#dash"); pg.reload(); pg.wait_for_timeout(3000)
             if "3 הפעולות החשובות" not in pg.inner_text("main"): fails.append(f"{name}: real top3")
+        # בדיקה לפני קנייה + יומן תזות + מעקב
+        pg.goto(BASE + "#today"); pg.reload(); pg.wait_for_selector(".idea [data-chk]"); pg.locator(".idea [data-chk]").first.click()
+        pg.wait_for_selector("#dlg .verdict", timeout=8000); v = pg.inner_text("#dlg")
+        for need in ["מס עיזבון", "ליבה / לוויין", "דמי ניהול", "5 החברות הגדולות"]:
+            if need not in v: fails.append(f"{name}: prebuy missing {need}")
+        if not any(x in v for x in ["🟢", "🟡", "🔴"]): fails.append(f"{name}: no verdict")
+        pg.fill("#kT", "VOO"); pg.fill("#kA", "1000"); pg.select_option("#kC", "USD"); pg.click("#kGo"); pg.wait_for_timeout(800)
+        if "CSPX" not in pg.inner_text("#kOut"): fails.append(f"{name}: VOO ucits alt")
+        pg.click("#thz summary"); pg.fill("#zW", "תזת בדיקה"); pg.fill("#zV", "20"); pg.click("#zSave"); pg.wait_for_timeout(300)
+        pg.click("#dX")
+        pg.goto(BASE + "#journal"); pg.reload(); pg.wait_for_timeout(1800)
+        t = pg.inner_text("main")
+        if "יומן תזות" not in t or "תזת בדיקה" not in t or "ירידה של 20%" not in t: fails.append(f"{name}: thesis journal")
+        pg.goto(BASE + "#watch"); pg.reload(); pg.wait_for_selector("#wAdd")
+        pg.fill("#wS", "NVDA"); pg.select_option("#wK", "score"); pg.fill("#wV", "1"); pg.click("#wAdd"); pg.wait_for_timeout(800)
+        if "התראות עכשיו" not in pg.inner_text("main"): fails.append(f"{name}: watch alert")
+        if not pg.is_disabled("#wExp"): fails.append(f"{name}: export not gated")
+        pg.check("#wOk")
+        if pg.is_disabled("#wExp"): fails.append(f"{name}: export not enabled")
+        sw = pg.evaluate("document.documentElement.scrollWidth - innerWidth")
+        if sw > 2: fails.append(f"{name}/watch: overflow {sw}px")
+        pg.goto(BASE + "#dash"); pg.reload(); pg.wait_for_selector("#qaChk"); pg.click("#qaChk"); pg.fill("#kT", "CSPX"); pg.click("#kGo"); pg.wait_for_selector("#dlg .verdict")
+        if "לא חל" not in pg.inner_text("#dlg"): fails.append(f"{name}: CSPX estate")
+        pg.screenshot(path=f"tests/shots/{name}-prebuy.png")
         if errs: fails.append(f"{name}: console errors {errs[:3]}")
         ctx.close()
     b.close()
