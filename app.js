@@ -132,6 +132,7 @@ const TABS = [["dash", "סקירה"], ["profile", "פרופיל ומדיניות
 let tab = location.hash.slice(1) || "dash";
 function renderTabs() {
   $("#tabs").innerHTML = TABS.map(([k, l]) => `<button role="tab" aria-selected="${k === tab}" data-t="${k}">${l}</button>`).join("");
+  $("#tabs button[aria-selected=true]")?.scrollIntoView({ block: "nearest", inline: "center" });
   $$("#tabs button").forEach(b => b.onclick = () => { tab = b.dataset.t; history.replaceState(null, "", "#" + tab); go(); });
 }
 async function go() {

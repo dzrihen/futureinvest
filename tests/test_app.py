@@ -4,7 +4,7 @@ BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8791/"
 srv = None
 if "localhost" in BASE:
     srv = subprocess.Popen([sys.executable, "-m", "http.server", "8791"], cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1)
-TABS = ["dash", "profile", "port", "expo", "cmp", "isr", "sim", "stress", "journal", "data"]
+TABS = ["re", "dash", "profile", "port", "expo", "cmp", "isr", "sim", "stress", "journal", "data"]
 fails = []
 try:
   with sync_playwright() as p:
@@ -14,6 +14,9 @@ try:
         pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None); pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.on("dialog", lambda d: d.accept())
         pg.goto(BASE + "#data"); pg.wait_for_selector("#demo"); pg.click("#demo"); pg.wait_for_selector("text=אחזקות"); pg.wait_for_timeout(1500)
+        pg.goto(BASE + "#data"); pg.reload(); pg.wait_for_selector("#reDemo"); pg.click("#reDemo"); pg.wait_for_selector("text=IRR שנתי משוער"); pg.wait_for_timeout(800)
+        if "הון נטו" in "": pass
+        pg.goto(BASE + "#port"); pg.reload(); pg.wait_for_timeout(1500)
         n = pg.locator("table.tbl tr").count()
         if n < 7: fails.append(f"{name}: demo holdings rows {n}")
         for t in TABS:
@@ -23,6 +26,10 @@ try:
             pg.screenshot(path=f"tests/shots/{name}-{t}.png", full_page=(t in ("expo","sim")))
             sw = pg.evaluate("document.documentElement.scrollWidth - innerWidth")
             if sw > 2: fails.append(f"{name}/{t}: horizontal overflow {sw}px")
+        pg.goto(BASE + "#dash"); pg.reload(); pg.wait_for_timeout(2000)
+        if "הון נטו" not in pg.inner_text("main"): fails.append(f"{name}: net worth")
+        pg.goto(BASE + "#re"); pg.reload(); pg.wait_for_timeout(1500)
+        if "IRR" not in pg.text_content("main"): fails.append(f"{name}: re persistence")
         # sale flow + persistence
         pg.goto(BASE + "#isr"); pg.reload(); pg.wait_for_selector("#sCalc"); pg.select_option("#sH", index=2); pg.fill("#sInc", "800000"); pg.click("#sCalc"); pg.wait_for_selector("#sWhy")
         if "מס רווח הון" not in pg.inner_text("#sOut"): fails.append(f"{name}: sale calc")
