@@ -1,0 +1,26 @@
+name: update-data
+on:
+  schedule:
+    - cron: "30 3 * * 2-6"   # 03:30 UTC, Tue–Sat (after US market close)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: update-data, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install openpyxl==3.1.5
+      - run: python -u pipeline/build.py
+        env:
+          SEC_UA: ${{ secrets.SEC_UA }}
+      - name: commit
+        run: |
+          git config user.name "futureinvest-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || (git commit -m "data: daily update $(date -u +%F)" && git push)

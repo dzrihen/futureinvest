@@ -1,0 +1,11 @@
+# טיקרים נוספים לעדכון מחיר יומי (שורה לכל טיקר, פורמט Yahoo; בורסת ת"א: סיומת .TA)
+TEVA
+NICE
+CHKP
+WIX
+MBLY
+ESLT
+TEVA.TA
+LUMI.TA
+POLI.TA
+ICL.TA
