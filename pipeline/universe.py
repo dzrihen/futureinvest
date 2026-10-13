@@ -39,6 +39,8 @@ E = [
  ("VWRA","Vanguard FTSE All-World UCITS (USD Acc)","Vanguard","FTSE All-World","אירלנד","Acc","פיזי",0.19,"IE00BK5BQT80","VWRA.L",("proxy","VT")),
  ("VWCE","Vanguard FTSE All-World UCITS (EUR, Xetra)","Vanguard","FTSE All-World","אירלנד","Acc","פיזי",0.19,"IE00BK5BQT80","VWCE.DE",("proxy","VT")),
  ("IWDA","iShares Core MSCI World UCITS (Acc)","iShares","MSCI World","אירלנד","Acc","פיזי",0.20,"IE00B4L5Y983","IWDA.L",("proxy","URTH")),
+ ("SWDA","iShares Core MSCI World UCITS (Acc, LSE GBP)","iShares","MSCI World","אירלנד","Acc","פיזי",0.20,"IE00B4L5Y983",None,("proxy","URTH")),
+ ("VANGMSA","Vanguard All-World UCITS (מיטב: VANGMSA)","Vanguard","FTSE All-World (משוער)","אירלנד","Acc","פיזי",0.19,None,None,("proxy","VT")),
  ("EIMI","iShares Core MSCI EM IMI UCITS (Acc)","iShares","MSCI EM IMI","אירלנד","Acc","פיזי",0.18,"IE00BKM4GZ66","EIMI.L",("proxy","IEMG")),
  ("CNDX","iShares Nasdaq 100 UCITS (Acc)","iShares","Nasdaq-100","אירלנד","Acc","פיזי",0.30,"IE00B53SZB19","CNDX.L",("proxy","QQQ")),
  ("EQQQ","Invesco EQQQ Nasdaq-100 UCITS (Dist)","Invesco","Nasdaq-100","אירלנד","Dist","פיזי",0.30,"IE0032077012","EQQQ.L",("proxy","QQQ")),

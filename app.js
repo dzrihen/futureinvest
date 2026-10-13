@@ -289,7 +289,7 @@ VIEWS.port = async m => {
     doughnut("cS", L.sec.map(r => [r[0], r[1]])); doughnut("cC", L.cty.map(r => [cname(r[0]), r[1]])); doughnut("cU", L.cur.map(r => [CURN[r[0]] || r[0], r[1]]));
   }
 };
-const CORE = ["VOO", "IVV", "SPY", "VTI", "VT", "VXUS", "VEA", "VWO", "IEMG", "URTH", "CSPX", "SXR8", "VUAA", "VWRA", "VWCE", "IWDA", "EIMI"];
+const CORE = ["VOO", "IVV", "SPY", "VTI", "VT", "VXUS", "VEA", "VWO", "IEMG", "URTH", "CSPX", "SXR8", "VUAA", "VWRA", "VWCE", "IWDA", "SWDA", "VANGMSA", "EIMI"];
 const coreDefault = s => CORE.includes(s);
 let sellPrefill = null;
 
@@ -601,7 +601,7 @@ const TECH = ["QQQ", "QQQM", "SMH", "SOXX", "XLK", "VGT", "ARKK", "BOTZ", "ROBO"
 function assetClass(h) {
   if (h.type === "cash") return "cash";
   if (["VXUS", "VEA"].includes(h.sym)) return "intl_stocks"; if (["VWO", "IEMG", "EIMI"].includes(h.sym)) return "em_stocks";
-  if (TECH.includes(h.sym)) return "tech"; if (["VT", "VWRA", "VWCE", "URTH", "IWDA"].includes(h.sym)) return "world";
+  if (TECH.includes(h.sym)) return "tech"; if (["VT", "VWRA", "VWCE", "URTH", "IWDA", "SWDA", "VANGMSA"].includes(h.sym)) return "world";
   if (!isETF(h.sym)) return "stock"; return "us_stocks";
 }
 function crisisFor(h, k) {

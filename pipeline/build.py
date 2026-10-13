@@ -228,7 +228,7 @@ def main():
 
     # 3) prices (monthly adjusted) for ETFs + proxies
     prices = load("prices.json", {}) or {}
-    syms = {m["y"]: m["t"] for m in meta}
+    syms = {m["y"]: m["t"] for m in meta if m["y"]}
     for k, (s, _) in PROXIES.items(): syms[s] = s
     for ysym, key in syms.items():
         try:
