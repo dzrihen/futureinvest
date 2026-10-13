@@ -143,7 +143,9 @@ def macro(Y):
             else:
                 d, v = rows[-1]; res[sid] = {"l": lab, "v": v, "u": "%" if sid != "VIXCLS" else "", "d": d, "src": "FRED", "chg": round(v - rows[max(0, len(rows) - 22)][1], 2)}
             log.append({"src": f"FRED {sid}", "ok": True, "asof": d})
-        except Exception as e: log.append({"src": f"FRED {sid}", "ok": False, "err": str(e)[:80]})
+        except Exception as e:
+            log.append({"src": f"FRED {sid}", "ok": False, "err": str(e)[:80]})
+            if "timed out" in str(e): break  # FRED חוסם/איטי – לא מבזבזים דקות Actions, עוברים לגיבוי Yahoo
     # גיבוי/השלמה מ-Yahoo
     q = Y.quotes(["^VIX", "^TNX", "CL=F", "GC=F", "ILS=X", "^GSPC"])
     lab = {"^VIX": ("VIXCLS", "מדד הפחד VIX", ""), "^TNX": ("DGS10", "תשואת אג\"ח ארה\"ב ל-10 שנים", "%"), "CL=F": ("OIL", "נפט (דולר לחבית)", "$"), "GC=F": ("GOLD", "זהב (דולר לאונקיה)", "$"), "ILS=X": ("USDILS", "דולר-שקל", "₪"), "^GSPC": ("SPX", "S&P 500", "")}
