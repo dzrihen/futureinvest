@@ -256,6 +256,14 @@ def main():
     save("securities.json", {"asof": NOW, "src": "SSGA (מיפוי טיקר/CUSIP/סקטור GICS) + Yahoo Finance (מחיר אחרון)", "s": sec})
     log.append({"src": "yahoo-spark stocks", "ok": bool(spark), "n": len(spark)})
 
+    # 5) מסך הזדמנויות היום (אירועים, 13F, ציונים) – כישלון כאן לא מפיל את שאר הנתונים
+    try:
+        import opps
+        olog = opps.build([{"t": r["t"], "w": r["w"]} for r in refs.get("SPY", ([], None))[0] if r.get("t")] or (load("etf/SPY.json", {}) or {}).get("h", []), sec, extra)
+        bad_o = [l for l in olog if not l["ok"]]
+        log.append({"src": "opps (הזדמנויות היום)", "ok": True, "n": len(olog) - len(bad_o)})
+    except Exception as e:
+        log.append({"src": "opps (הזדמנויות היום)", "ok": False, "err": str(e)[:160]})
     fx = prices.get("ILS=X", {})
     save("meta.json", {"built": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"), "etfs": meta, "proxies": proxies,
                        "crises": {k: {"from": a, "to": b, "label": l} for k, (a, b, l) in CRISES.items()},

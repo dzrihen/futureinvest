@@ -129,7 +129,7 @@ function usSitusOf(h) {
 
 /* ---------- UI shell ---------- */
 const TABS = [["dash", "סקירה"], ["profile", "פרופיל ומדיניות"], ["port", "התיק שלי"], ["expo", "חשיפה אמיתית"], ["cmp", "השוואת ETF"], ["isr", "מיסוי למשקיע ישראלי"], ["sim", "סימולטור"], ["stress", "מבחני קיצון"], ["journal", "יומן החלטות"], ["data", "נתונים וגיבוי"]];
-let tab = location.hash.slice(1) || "dash";
+let tab = location.hash.slice(1) || "today";
 function renderTabs() {
   $("#tabs").innerHTML = TABS.map(([k, l]) => `<button role="tab" aria-selected="${k === tab}" data-t="${k}">${l}</button>`).join("");
   $("#tabs button[aria-selected=true]")?.scrollIntoView({ block: "nearest", inline: "center" });
@@ -700,7 +700,7 @@ VIEWS.data = async m => {
   catch (e) { $("#main").innerHTML = '<div class="alert bad">לא ניתן לטעון את קובצי הנתונים. נסה לרענן.</div>'; return; }
   D.fxx = { GBP: D.meta.fx.gbpusd, EUR: D.meta.fx.eurusd };
   D.meta.builtIL = ilTime(D.meta.built); $("#dataStamp").textContent = "נתונים עודכנו: " + D.meta.builtIL;
-  if (!TABS.some(t => t[0] === tab)) tab = "dash";
+  if (!TABS.some(t => t[0] === tab)) tab = "today";
   if (!window.Chart) await new Promise(r => { const t = setInterval(() => { if (window.Chart) { clearInterval(t); r(); } }, 50); setTimeout(() => { clearInterval(t); r(); }, 4000); });
   go();
 })();

@@ -4,7 +4,7 @@ BASE = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8793/"
 srv = None
 if "localhost" in BASE:
     srv = subprocess.Popen([sys.executable, "-m", "http.server", "8793"], cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1)
-TABS = ["plan", "re", "dash", "profile", "port", "expo", "cmp", "isr", "sim", "stress", "journal", "data"]
+TABS = ["today", "plan", "re", "dash", "profile", "port", "expo", "cmp", "isr", "sim", "stress", "journal", "data"]
 fails = []
 try:
   with sync_playwright() as p:
@@ -26,6 +26,24 @@ try:
             pg.screenshot(path=f"tests/shots/{name}-{t}.png", full_page=(t in ("expo","sim")))
             sw = pg.evaluate("document.documentElement.scrollWidth - innerWidth")
             if sw > 2: fails.append(f"{name}/{t}: horizontal overflow {sw}px")
+        # הזדמנויות היום: לשונית ראשונה, ברירת מחדל, רעיונות, אירועים, 13F, חיפוש, משקלות
+        pg.goto(BASE); pg.reload(); pg.wait_for_timeout(2500)
+        if pg.locator("#tabs button").first.inner_text() != "הזדמנויות היום": fails.append(f"{name}: today not first tab")
+        t = pg.inner_text("main")
+        for need in ["רעיונות היום", "מה קורה בעולם", "המשקיעים הגדולים", "לא ייעוץ"]:
+            if need not in t: fails.append(f"{name}: today missing {need}")
+        if pg.locator(".idea").count() < 3: fails.append(f"{name}: fewer than 3 ideas")
+        if pg.locator(".ev").count() < 3: fails.append(f"{name}: fewer than 3 events")
+        pg.fill("#oq", "NVDA"); pg.click("#oqGo"); pg.wait_for_timeout(300)
+        if "למה הציון הזה" not in pg.inner_text("#oqOut") or "ביצועי עבר" not in pg.inner_text("#oqOut"): fails.append(f"{name}: search score")
+        pg.fill("#oq", "ZZZZ"); pg.click("#oqGo"); pg.wait_for_timeout(200)
+        if "לא נמצא" not in pg.inner_text("#oqOut"): fails.append(f"{name}: search missing")
+        s0 = pg.locator(".idea .sc").first.inner_text()
+        pg.evaluate("document.querySelector('details.card').open=true"); pg.fill("[data-ow=risk]", "50"); pg.dispatch_event("[data-ow=risk]", "change"); pg.wait_for_timeout(800)
+        if "\"risk\":50" not in pg.evaluate("localStorage.getItem('futureinvest.v1')"): fails.append(f"{name}: weights not saved")
+        pg.evaluate("document.querySelector('#owReset').click()"); pg.wait_for_timeout(500)
+        sw = pg.evaluate("document.documentElement.scrollWidth - innerWidth")
+        if sw > 2: fails.append(f"{name}/today: overflow {sw}px")
         pg.goto(BASE + "#dash"); pg.reload(); pg.wait_for_timeout(2000)
         if "הון נטו" not in pg.inner_text("main"): fails.append(f"{name}: net worth")
         pg.goto(BASE + "#plan"); pg.reload(); pg.wait_for_timeout(2500)
